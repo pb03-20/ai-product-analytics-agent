@@ -1,331 +1,253 @@
 # 🎵 Spotify Product Analytics Agent
 
-> An automated product analytics workflow built with **n8n, PostgreSQL, and Gemini** to transform Spotify catalog data into product insights, feature opportunities, recommendation hypotheses, and roadmap ideas.
+> An automated product analytics system built with **n8n, PostgreSQL, SQL, Gemini, and JavaScript** that transforms a Spotify music dataset into structured analytics, product insights, feature opportunities, and roadmap hypotheses.
 
 ---
 
-## 📌 Project Overview
+## 🚀 Project Overview
 
-This project demonstrates how a Product Manager can use an automated analytics workflow to move from:
+This project demonstrates how a Product Manager can use **workflow automation + SQL analytics + AI** to move from a large music catalog to actionable product insights.
 
-**Raw Spotify Dataset → SQL Analysis → AI-Assisted Interpretation → Product Insights → Feature Opportunities → Roadmap**
-
-Instead of manually analyzing thousands of Spotify tracks, the workflow uses **n8n** as the orchestration layer.
-
-The workflow connects a PostgreSQL database containing Spotify track data to multiple analytical SQL branches. The SQL results are then passed through aggregation and AI analysis steps before being converted into structured product reports.
-
-The goal is not to replace product judgment.
-
-The goal is to **automate repetitive analysis so that more time can be spent on product decisions.**
-
----
-
-# 🧠 What Problem Does This Solve?
-
-A music product team may have a large catalog containing information such as:
-
-- Track popularity
-- Danceability
-- Energy
-- Valence
-- Acousticness
-- Tempo
-- Instrumentalness
-- Speechiness
-- Track duration
-- Artist
-- Genre
-
-The challenge is turning these raw attributes into actionable product questions.
-
-For example:
-
-- Which tracks could support a discovery feature?
-- What content could power a mood-based playlist?
-- Which tracks look like "hidden gems"?
-- Which genres are similar?
-- Which artists could be candidates for discovery?
-- What tracks have high synthetic skip-risk?
-- What content could support a time-based playlist?
-- What product experiments could be created from the catalog?
-- Which product opportunities should be prioritized?
-
-This project automates that analytical process.
-
----
-
-# 🏗️ Workflow Architecture
-
-The complete workflow is built in **n8n**.
-
-The architecture contains multiple parallel analytical branches.
-
-Each branch generally follows this pattern:
-
-```text
-PostgreSQL
-     ↓
-SQL Analysis
-     ↓
-Aggregate
-     ↓
-Gemini Analysis
-     ↓
-JavaScript Processing
-     ↓
-Product Report
-```
-
----
-
-# 🔧 Complete n8n Workflow
-
-The entire analytics pipeline is implemented as a single n8n workflow.
-
-The workflow begins with the trigger on the left and branches into multiple PostgreSQL/SQL analyses. Each analytical branch then passes through aggregation, Gemini analysis, and JavaScript processing before producing its corresponding output.
-
-![Complete n8n Workflow](docs/n8n-workflow-full.png)
-
-### What the workflow shows
-
-- One central workflow trigger
-- Multiple parallel PostgreSQL analysis branches
-- 17 SQL analysis stages
-- Aggregation after the SQL analysis
-- Gemini/LLM interpretation
-- JavaScript processing
-- Multiple independent analytical outputs
-- A complete end-to-end product analytics pipeline
-
-The workflow is intentionally organized into independent branches so that each analytical question can be processed separately while still being part of the same automated system.
-
----
-
-# ⚙️ How n8n Is Used
-
-n8n is the **orchestration layer** of the project.
-
-It connects the different components of the analytical pipeline.
-
-The important distinction is:
-
-> **PostgreSQL and SQL perform the core data analysis. n8n orchestrates the analysis. Gemini interprets the analytical results. JavaScript processes the final outputs.**
-
-The workflow therefore follows:
+The pipeline follows:
 
 ```text
 Spotify Dataset
        ↓
-PostgreSQL
+   PostgreSQL
        ↓
-17 SQL Analyses
+  17 SQL Analyses
        ↓
-Aggregation
+    Aggregate
        ↓
-Gemini / AI Analysis
+   Gemini / AI
        ↓
 JavaScript Processing
        ↓
-Final Product Outputs
+Structured Reports
+       ↓
+Product Opportunities
+       ↓
+Roadmap Hypotheses
 ```
 
-### Why n8n?
+The purpose of the system is not to allow AI to make unsupported product decisions.
 
-Using n8n makes it possible to:
+Instead:
 
-- Connect PostgreSQL and AI models in one workflow
-- Run multiple analytical branches
-- Automate repetitive analysis
-- Pass outputs between analytical stages
-- Keep the complete process visually understandable
-- Reuse the workflow for future datasets
-- Capture complete workflow executions
+> **SQL calculates the analytical metrics → n8n orchestrates the workflow → Gemini interprets the results → JavaScript structures the output → Product thinking turns insights into hypotheses.**
 
 ---
 
-# 🧮 The 17 SQL Analyses
+# 🏗️ Complete n8n Architecture
 
-A major part of the project is the use of **17 separate SQL analysis branches**.
+The complete workflow is implemented as a single n8n workflow with **17 parallel SQL analysis branches**.
 
-Each SQL query is designed to answer a different analytical or product question.
-
-The workflow uses these analytical branches instead of relying on a single large query.
-
-## 1. Track Similarity Analysis
-
-Analyzes track-level audio characteristics to identify similar tracks.
-
-The analysis considers attributes such as:
-
-- Danceability
-- Energy
-- Valence
-- Acousticness
-
-### Product Question
-
-> Which tracks could be recommended alongside another track?
-
-### Potential Product Use
-
-- Similar tracks
-- "More like this"
-- Recommendation systems
-- Music discovery
-
----
-
-## 2. Genre Similarity Analysis
-
-Analyzes audio characteristics at the genre level.
-
-Genres can be compared using characteristics such as:
-
-- Danceability
-- Energy
-- Valence
-- Acousticness
-
-### Product Question
-
-> Which genres have similar musical characteristics?
-
-### Potential Product Use
-
-- Cross-genre discovery
-- Genre recommendations
-- Discovery playlists
-
----
-
-## 3. Hidden Gems Analysis
-
-Identifies relatively low-popularity tracks that satisfy stronger audio-feature conditions.
-
-The concept is:
+Each branch follows the same general pattern:
 
 ```text
-Low Popularity
-      +
-Strong Audio Characteristics
-      ↓
-Potential Hidden Gem
+Execute SQL Query
+        ↓
+     Aggregate
+        ↓
+    Gemini / AI
+        ↓
+ JavaScript Processing
+        ↓
+    Final Output
 ```
 
-### Product Question
+## 📸 Full Workflow
 
-> Which lesser-known tracks could be surfaced to users?
+![Complete n8n Workflow](docs/n8n-workflow-full.png)
 
-### Potential Product Use
+The screenshot above shows the actual workflow architecture used in the project.
 
-**Hidden Gems** discovery feature.
+The central trigger distributes execution across the analytical branches. Each branch independently performs SQL analysis, aggregates the result, sends the structured result to a Gemini model, and then processes the generated report through JavaScript nodes.
+
+The workflow is intentionally designed as a **fan-out analytical architecture** rather than one large SQL query.
 
 ---
 
-## 4. Mood-Based Playlist Analysis
+# 🔢 Workflow Scale
 
-Analyzes audio characteristics to identify tracks suitable for different moods.
+The successful execution used for this project contained:
 
-Examples include:
+| Component | Result |
+|---|---:|
+| SQL analysis branches | **17** |
+| Total workflow nodes executed | **86** |
+| Execution status | **Success** |
+| Execution mode | Manual |
+| Execution ID | `414` |
 
-- Happy & Energetic
-- Chill & Relaxing
-- Workout Motivation
+The execution record shows `status: success` and a total `nodeCount` of 86. :contentReference[oaicite:2]{index=2}
 
-The analysis uses combinations of audio characteristics such as:
+The 17 SQL nodes are explicitly present in the execution data, from `Execute a SQL query` through `Execute a SQL query16`. :contentReference[oaicite:3]{index=3} :contentReference[oaicite:4]{index=4}
 
-- Valence
-- Energy
+---
+
+# 🧩 How the Architecture Works
+
+## 1. Workflow Trigger
+
+The workflow begins with:
+
+```text
+When clicking 'Execute workflow'
+```
+
+This acts as the manual entry point for the complete analytics pipeline.
+
+The execution record confirms that the trigger completed successfully. :contentReference[oaicite:5]{index=5}
+
+---
+
+## 2. PostgreSQL + SQL Analysis
+
+The core analytical work happens inside PostgreSQL.
+
+The workflow contains **17 independent SQL analysis nodes**.
+
+Rather than asking one query to answer every product question, the workflow separates the analytical problems into independent branches.
+
+This makes the workflow:
+
+- Easier to understand
+- Easier to debug
+- Easier to modify
+- Easier to extend
+- Easier to connect to different AI prompts
+
+---
+
+# 🔬 The 17 SQL Analysis Branches
+
+The workflow contains the following 17 SQL execution stages:
+
+| # | n8n SQL Node | Analytical Area |
+|---:|---|---|
+| 1 | `Execute a SQL query` | Analytical SQL branch |
+| 2 | `Execute a SQL query1` | Analytical SQL branch |
+| 3 | `Execute a SQL query2` | Analytical SQL branch |
+| 4 | `Execute a SQL query3` | Analytical SQL branch |
+| 5 | `Execute a SQL query4` | Analytical SQL branch |
+| 6 | `Execute a SQL query5` | Analytical SQL branch |
+| 7 | `Execute a SQL query6` | Analytical SQL branch |
+| 8 | `Execute a SQL query7` | Analytical SQL branch |
+| 9 | `Execute a SQL query8` | Analytical SQL branch |
+| 10 | `Execute a SQL query9` | Analytical SQL branch |
+| 11 | `Execute a SQL query10` | Analytical SQL branch |
+| 12 | `Execute a SQL query11` | Analytical SQL branch |
+| 13 | `Execute a SQL query12` | Analytical SQL branch |
+| 14 | `Execute a SQL query13` | Analytical SQL branch |
+| 15 | `Execute a SQL query14` | Analytical SQL branch |
+| 16 | `Execute a SQL query15` | Catalog analysis |
+| 17 | `Execute a SQL query16` | Product opportunity / roadmap analysis |
+
+The execution log contains 17 successful SQL-query node executions. :contentReference[oaicite:6]{index=6}
+
+> The node names above are the actual n8n node names. The analytical purpose of each query is determined by the SQL logic and its returned fields.
+
+---
+
+# 📊 What the SQL Analysis Produces
+
+The SQL branches generate several different types of analytical outputs.
+
+These include:
+
+### 🎵 Track-level analysis
+
+The workflow evaluates characteristics such as:
+
+- Popularity
 - Danceability
-- Acousticness
+- Energy
+- Valence
 - Tempo
-
-### Product Question
-
-> Can audio characteristics be used to create mood-oriented listening experiences?
-
-### Potential Product Use
-
-**Mood-Based Radio / Mood Playlists**
-
----
-
-## 5. Time-Based Playlist Analysis
-
-Analyzes tracks for different listening contexts and time periods.
-
-Examples include:
-
-- Morning Energizer
-- Focus Flow
-- Evening Wind Down
-
-### Product Question
-
-> Can track characteristics be mapped to different listening contexts?
-
-### Potential Product Use
-
-**Time-of-Day Playlists**
-
----
-
-## 6. Viral Discovery Analysis
-
-Creates an analytical `viral_potential_score` using selected track characteristics.
-
-Tracks can be classified into analytical categories such as:
-
-- TikTok Ready
-- Feel-Good Viral
-- Hype Track
-- Organic Growth
-
-### Product Question
-
-> Which tracks could be interesting candidates for discovery or emerging-content experiments?
-
-> **Note:** This is a SQL-defined heuristic and does not predict actual viral performance.
-
----
-
-## 7. Engagement / Retention Analysis
-
-Creates an analytical engagement score using selected track characteristics.
-
-The analysis considers factors such as:
-
-- Danceability
-- Energy
-- Valence
-- Duration
-
-### Product Question
-
-> Which types of content could potentially support stronger listening engagement?
-
-> **Note:** This is a synthetic analytical score and does not represent measured user retention.
-
----
-
-## 8. Skip-Risk Analysis
-
-Creates a synthetic skip-risk analysis using multiple track characteristics.
-
-Factors include:
-
-- Track duration
-- Energy
-- Tempo
-- Danceability
-- Valence
 - Acousticness
+- Instrumentalness
 - Speechiness
+- Track duration
+
+---
+
+### 🎧 Discovery Analysis
+
+The workflow creates analytical pools such as:
+
+- Mood Boosters
+- Chill Seekers
+- Discovery Enthusiasts
+- High Energy Listeners
+
+For example, the generated analysis identifies:
+
+| Segment | Tracks | Avg Popularity | Avg Energy | Avg Tempo |
+|---|---:|---:|---:|---:|
+| Mood Boosters | 26,224 | 30.80 | 0.721 | 124.6 |
+| Chill Seekers | 18,010 | 30.32 | 0.221 | 110.6 |
+| Discovery Enthusiasts | 30,540 | 16.83 | 0.774 | 124.8 |
+| High Energy Listeners | 33,650 | 32.52 | 0.863 | 145.4 |
+
+These are **SQL-defined track segments**, not verified user personas. :contentReference[oaicite:7]{index=7}
+
+---
+
+# 🎚️ Audio Feature Analysis
+
+Another analytical branch groups tracks around individual audio characteristics.
+
+The workflow produced segments such as:
+
+| Segment | Track Count | Feature Average | Proposed Product Experiment |
+|---|---:|---:|---|
+| Energy Leaders | 37,880 | 0.902 Energy | High Energy Badge |
+| Danceability Leaders | 8,768 | 0.849 Danceability | Made for Dancing Badge |
+| Acoustic Champions | 15,792 | 0.912 Acousticness | Unplugged Badge |
+| Instrumental Focus | 18,850 | 0.824 Instrumentalness | No Lyrics Filter |
+
+These segments are generated from SQL-defined thresholds and are subsequently interpreted as possible product experiments. :contentReference[oaicite:8]{index=8}
+
+---
+
+# 📈 Catalog Health Analysis
+
+One branch focuses on the overall catalog.
+
+The SQL-generated catalog metrics include:
+
+| Metric | Value |
+|---|---:|
+| Total Active Library | **114,000** |
+| Playlist-Ready Tracks | **52,063** |
+| Discovery Pool | **65,413** |
+| Average Track Quality Score | **0.561** |
+| High Quality Content | **13,570** |
+
+The workflow defines these metrics from SQL logic based on popularity, duration, danceability, energy, and valence. :contentReference[oaicite:9]{index=9}
+
+These metrics can then be used as a starting point for product experiments.
+
+---
+
+# 🎯 Skip-Risk Analysis
+
+The workflow also contains a **synthetic skip-risk analysis**.
+
+The analysis evaluates track characteristics such as:
+
+- Duration
+- Tempo
+- Speechiness
+- Danceability
+- Energy
+- Valence
 - Instrumentalness
 
-The analysis categorizes potential reasons for higher skip risk.
+The generated output analyzed **306 track records**, with approximately **168 unique tracks**, an average popularity of **66.8**, and an average synthetic skip probability of **0.47**. :contentReference[oaicite:10]{index=10}
 
-Examples include:
+Example analytical categories include:
 
 - Too Long
 - Too Slow
@@ -333,388 +255,431 @@ Examples include:
 - Too Instrumental
 - Low Danceability
 - Very Low Mood
-- Good Retention
 
-### Product Question
+### Important
 
-> Which track characteristics could potentially contribute to skip behavior?
+This is **not actual Spotify skip behavior**.
 
-> **Note:** The skip probability is a SQL-defined heuristic, not an observed user skip rate.
+The `skip_probability` and `skip_risk_category` values are generated by SQL logic. The dataset contains no actual listener skip events or retention logs. :contentReference[oaicite:11]{index=11}
 
----
-
-## 9. Artist Analysis
-
-Groups the catalog by artist and analyzes artist-level characteristics.
-
-The analysis considers metrics such as:
-
-- Track count
-- Average popularity
-- Maximum popularity
-- Genre diversity
-
-### Product Question
-
-> Which artists could be relevant for discovery experiences?
-
-### Potential Product Use
-
-- Artist Discovery
-- Emerging Artist feeds
-- Artist recommendations
+Therefore the output should be treated as a **product hypothesis generator**, not a predictive skip model.
 
 ---
 
-## 10. Cross-Genre Discovery Analysis
+# 🔀 Cross-Genre Discovery
 
-Analyzes relationships between individual tracks and genre-level characteristics.
+The workflow also analyzes relationships between genres.
 
-The purpose is to identify potential bridges between different genres.
-
-### Product Question
-
-> If a user likes one type of music, what other genre might they discover?
-
-### Potential Product Use
+For example, SQL output can produce recommendations such as:
 
 ```text
-User likes Genre A
-       ↓
-Related characteristics
-       ↓
-Genre B
-       ↓
-Discovery recommendation
+If you like K-Pop
+        ↓
+Try House
 ```
 
----
-
-## 11. Niche Genre Analysis
-
-Analyzes genres based on catalog size, artist representation, and popularity.
-
-### Product Question
-
-> Which genres could represent opportunities for specialized discovery experiences?
-
-### Potential Product Use
-
-- Genre landing pages
-- Curated playlists
-- Niche discovery
-- Genre-specific experiences
-
----
-
-## 12. Explicit vs. Clean Content Analysis
-
-Compares explicit and clean tracks within genres.
-
-Potential metrics include:
-
-- Track count
-- Popularity
-- Energy
-- Danceability
-
-### Product Question
-
-> Could content preferences differ by genre or listening context?
-
-### Potential Product Experiment
+or:
 
 ```text
-Explicit by default
-        vs.
-Clean by default
-        vs.
-Personalized preference
+If you like EDM
+        ↓
+Try Electronic
 ```
 
-This could eventually be validated through an A/B test.
+These recommendations are based on calculated similarity between genre characteristics rather than actual user behavior. :contentReference[oaicite:12]{index=12}
+
+This creates a potential foundation for:
+
+- Cross-genre recommendations
+- Music discovery
+- Genre exploration
+- Related-genre playlists
 
 ---
 
-## 13. Track Duration Analysis
+# 🤖 Gemini / AI Analysis
 
-Analyzes track duration and creates analytical duration categories.
+After PostgreSQL produces structured results, n8n passes the output to Gemini.
+
+The AI does not directly query the database.
+
+Instead, it receives the analytical result and converts it into a product-readable interpretation.
 
 For example:
 
-- Short
-- Medium
-- Long
-- Very Long
+```text
+SQL Result
+    ↓
+Structured JSON
+    ↓
+Aggregate
+    ↓
+Gemini
+    ↓
+Product Analysis
+```
 
-### Product Question
+The Gemini output can contain:
 
-> How does track duration affect playlist composition?
+- Summary
+- Comparison tables
+- Key observations
+- Product hypotheses
+- Experiment ideas
+- Feature opportunities
+- Roadmap recommendations
+- Limitations
 
-### Potential Product Use
-
-- Playlist generation
-- Listening-session design
-- Playlist duration optimization
-
----
-
-## 14. Listening Segment Analysis
-
-Creates analytical segments based on track characteristics.
-
-Examples include:
-
-- High Energy
-- Mood Boosters
-- Chill Seekers
-- Discovery Enthusiasts
-
-### Product Question
-
-> What types of listening experiences could be created from the catalog?
-
-> **Note:** These are analytical segments based on catalog characteristics, not identified real users.
+The execution record shows Gemini model nodes successfully processing structured analytical results. One example takes the SQL-defined feature opportunities and turns them into a structured feature comparison and roadmap analysis. :contentReference[oaicite:13]{index=13}
 
 ---
 
-## 15. Audio Feature Opportunity Analysis
+# 🧠 Why Use AI After SQL?
 
-Analyzes audio characteristics to identify content categories.
+The important architecture decision is:
 
-Examples include:
+### SQL handles **measurement**
 
-- Made for Dancing
-- High Energy
-- Unplugged
-- Instrumental
-- Low Lyrics / No Lyrics
+SQL answers:
 
-### Product Question
+> "What does the data say?"
 
-> Can audio characteristics be turned into useful discovery filters or experiences?
+### Gemini handles **interpretation**
 
-### Potential Product Use
+Gemini answers:
 
-- Discovery filters
-- Track badges
-- Playlist categories
-- Search experiences
+> "What could this mean from a product perspective?"
 
----
+### The Product Manager handles **decision-making**
 
-## 16. Catalog Health Analysis
+The PM asks:
 
-Produces high-level metrics describing the analyzed music catalog.
+> "Should we actually build or test this?"
 
-Examples include:
+So the system becomes:
 
-- Total active library
-- Playlist-ready tracks
-- Discovery pool
-- Average quality score
-- High-quality content
-
-These metrics provide a high-level view of the catalog before product opportunities are prioritized.
-
-### Product Question
-
-> What does the overall catalog look like from a product opportunity perspective?
+```text
+DATA
+ ↓
+SQL
+ ↓
+EVIDENCE
+ ↓
+AI INTERPRETATION
+ ↓
+PRODUCT HYPOTHESIS
+ ↓
+PM DECISION
+```
 
 ---
 
-## 17. Product Opportunity & Roadmap Analysis
+# 🧱 JavaScript Processing
 
-The final analytical branch converts catalog-level findings into potential product opportunities.
+After Gemini generates the analysis, JavaScript nodes process the response.
 
-The workflow evaluates opportunities using dimensions such as:
+The JavaScript stages are used to transform model output into structured formats such as:
 
-- Addressable content
-- Technical feasibility
-- User-demand hypothesis
-- Priority score
-- Roadmap placement
+- Reports
+- HTML
+- JSON
+- Documentation-ready content
 
-### Product Question
+For example, one JavaScript node receives the Gemini-generated `report` and produces the corresponding HTML output. :contentReference[oaicite:14]{index=14}
 
-> Which product opportunities should be considered first?
+This allows the workflow to convert AI output into something that can be stored, displayed, or sent to another system.
 
 ---
 
-# 📊 Product Opportunities Identified
+# 💡 Final Product Opportunities
 
-The analysis produces several potential product opportunities.
+One of the final analytical branches produces four product opportunities.
 
-| Product Opportunity | Addressable Content | Feasibility | Demand | Priority | Roadmap |
+| Feature | Addressable Content | Feasibility | Demand Hypothesis | Priority | Roadmap |
 |---|---:|---|---|---:|---|
 | **Mood-Based Radio** | 114,000 tracks | High | High | 1 | Q1 2025 |
 | **Hidden Gems Section** | 26,473 tracks | High | High | 1 | Q1 2025 |
 | **Artist Discovery Feed** | 31,437 artists | Medium | High | 2 | Q2 2025 |
 | **Time-of-Day Playlists** | 114,000 tracks | High | Medium | 3 | Q3 2025 |
 
-> The priority, feasibility, and demand classifications above are generated by the project's SQL logic. They should be treated as product hypotheses rather than validated market conclusions.
+These values are directly present in the workflow execution output. :contentReference[oaicite:15]{index=15}
 
 ---
 
-# 🤖 AI / Gemini Analysis
+# 🥇 Priority 1 — Mood-Based Radio
 
-After SQL analysis, the workflow passes structured results to **Google Gemini**.
+### Addressable Content
 
-The AI layer is responsible for interpreting the analytical output rather than replacing the underlying SQL calculations.
+**114,000 tracks**
 
-The architecture is:
+The SQL logic identifies tracks with non-null valence and energy data.
 
-```text
-SQL
- ↓
-Structured Data
- ↓
-Aggregate
- ↓
-Gemini
- ↓
-Product Interpretation
- ↓
-JavaScript
- ↓
-Final Report
-```
+### Product Idea
 
-The AI layer can transform structured analytical results into:
+Create a personalized radio experience based on mood-related audio characteristics.
 
-- Executive summaries
-- Key observations
-- Product insights
-- Feature opportunities
-- Recommendations
-- Roadmap explanations
-- Limitations and caveats
+### Why it is interesting
 
-### Important Design Principle
+The workflow classifies the opportunity as:
 
-```text
-SQL calculates
-     ↓
-n8n orchestrates
-     ↓
-Gemini interprets
-     ↓
-JavaScript formats
-     ↓
-Product team decides
-```
+- Technical feasibility: **High**
+- User demand hypothesis: **High**
+- Priority score: **1**
 
-This separation is important because the AI model should not invent the underlying metrics.
+The workflow places it in:
+
+**Q1 2025 — Immediate**
+
+These classifications are generated by SQL logic and should be treated as hypotheses rather than validated product research. :contentReference[oaicite:16]{index=16}
 
 ---
 
-# 🧑‍💼 Product Management Perspective
+# 💎 Priority 1 — Hidden Gems
 
-This project is designed from a **Product Analytics + Product Management perspective**.
+### Addressable Content
 
-The objective is not simply to answer:
+**26,473 tracks**
 
-> "What does the dataset contain?"
-
-The objective is to move from:
+The SQL logic identifies tracks with:
 
 ```text
-Data
- ↓
-Pattern
- ↓
-Insight
- ↓
-Product Opportunity
- ↓
-Hypothesis
- ↓
-Prioritization
- ↓
-Experiment
+Popularity < 35
+AND
+Average Danceability > 0.60
+AND
+Average Energy > 0.60
+AND
+Average Valence > 0.60
 ```
+
+### Product Idea
+
+Create a **Hidden Gems** discovery experience for lesser-known tracks with selected audio characteristics.
+
+### Classification
+
+- Technical feasibility: **High**
+- User demand hypothesis: **High**
+- Priority score: **1**
+- Roadmap: **Q1 2025**
+
+:contentReference[oaicite:17]{index=17}
+
+---
+
+# 🎤 Priority 2 — Artist Discovery Feed
+
+### Addressable Content
+
+**31,437 distinct artists**
+
+Unlike the track-based opportunities, this metric represents distinct artist entities.
+
+### Product Idea
+
+Create an artist discovery feed that introduces users to artists outside their existing listening patterns.
+
+### Classification
+
+- Technical feasibility: **Medium**
+- User demand hypothesis: **High**
+- Priority score: **2**
+- Roadmap: **Q2 2025**
+
+The workflow explicitly notes that this opportunity requires a recommendation engine. :contentReference[oaicite:18]{index=18}
+
+---
+
+# 🕐 Priority 3 — Time-of-Day Playlists
+
+### Addressable Content
+
+**114,000 tracks**
+
+The opportunity uses track characteristics including:
+
+- Tempo
+- Energy
+
+### Product Idea
+
+Create contextual playlists based on listening time or context.
+
+Examples:
+
+```text
+Morning
+   ↓
+High-energy / appropriate tempo
+
+Afternoon
+   ↓
+Focus / balanced energy
+
+Evening
+   ↓
+Lower-energy listening
+```
+
+### Classification
+
+- Technical feasibility: **High**
+- User demand hypothesis: **Medium**
+- Priority score: **3**
+- Roadmap: **Q3 2025**
+
+:contentReference[oaicite:19]{index=19}
+
+---
+
+# 🗺️ Product Roadmap
+
+The resulting roadmap is:
+
+```text
+Q1 2025
+│
+├── Mood-Based Radio
+│
+└── Hidden Gems
+       ↓
+Q2 2025
+│
+└── Artist Discovery Feed
+       ↓
+Q3 2025
+│
+└── Time-of-Day Playlists
+```
+
+The ordering is based on the SQL-assigned `priority_score`.
+
+It should **not** be interpreted as a validated company roadmap.
+
+---
+
+# 🧪 From Analytics to Product Experiments
+
+The most important PM takeaway from this project is that the workflow does not end with analytics.
+
+The output can become an experimentation backlog.
 
 For example:
 
-### Observation
+### Hypothesis
 
-The SQL analysis identifies a large set of tracks that satisfy the project's Hidden Gems criteria.
+> Users may engage with lesser-known tracks when those tracks match desirable audio characteristics.
 
-### Product Insight
+### Feature
 
-There may be an opportunity to help users discover high-quality, less-popular music.
+**Hidden Gems**
 
-### Product Opportunity
+### Experiment
 
-Build a **Hidden Gems** discovery experience.
-
-### Next Step
-
-Test the experience using real user behavior.
-
-Potential metrics could include:
-
-- Discovery clicks
-- Play starts
-- Completion rate
-- Saves
-- Repeat plays
-- Playlist additions
-- Session continuation
-
----
-
-# 📈 Example Catalog Insights
-
-The workflow produces structured analytical outputs that can be used for product decision-making.
-
-Example catalog-level metrics include:
-
-| Metric | Value |
-|---|---:|
-| Total Active Library | 114,000 |
-| Playlist-Ready Tracks | 52,063 |
-| Discovery Pool | 65,413 |
-| Average Track Quality Score | 0.561 |
-| High Quality Content | 13,570 |
-
-These numbers are generated from the dataset and the project's SQL logic.
-
-They should be interpreted as **catalog analytics**, not actual user-behavior metrics.
-
----
-
-# 🔄 End-to-End Data Flow
-
-The complete project can be summarized as:
+Compare:
 
 ```text
-                   Spotify Dataset
-                         ↓
-                    PostgreSQL
-                         ↓
-                 ┌───────────────┐
-                 │   n8n Trigger │
-                 └───────┬───────┘
-                         ↓
-                  17 SQL Analyses
-                         ↓
-                    Aggregation
-                         ↓
-                   Gemini / AI
-                         ↓
-                 JavaScript Nodes
-                         ↓
-                  Analytical Output
-                         ↓
-                  Product Insights
-                         ↓
-               Feature Opportunities
-                         ↓
-                    Prioritization
-                         ↓
-                    Roadmap Ideas
+Control
+Existing discovery experience
+
+vs.
+
+Treatment
+Hidden Gems section
 ```
+
+### Potential KPIs
+
+- Discovery clicks
+- Track starts
+- Completion rate
+- Saves
+- Playlist additions
+- Repeat plays
+- Session continuation
+
+The current dataset does **not** contain these behavioral metrics, so they would need to be measured in a real experiment.
+
+---
+
+# ⚠️ Important Analytical Limitations
+
+This project deliberately separates **analytical hypotheses** from **validated product conclusions**.
+
+## Synthetic metrics
+
+Several metrics are calculated using SQL logic.
+
+For example:
+
+```text
+skip_probability
+viral_potential_score
+engagement_score
+priority_score
+```
+
+These should not automatically be interpreted as real-world behavioral measurements.
+
+---
+
+## No user-level behavior
+
+The dataset does not establish:
+
+- Actual skips
+- Actual retention
+- Actual session behavior
+- Actual saves
+- Actual playlist additions
+- Actual user satisfaction
+
+Therefore:
+
+```text
+Correlation / Pattern
+        ≠
+User Behavior
+        ≠
+Causal Product Impact
+```
+
+The skip-risk analysis explicitly notes that the data contains no observed listener logs, skip events, or retention rates. :contentReference[oaicite:20]{index=20}
+
+---
+
+## Dataset duplication
+
+The analysis also identifies duplication caused by multi-genre tagging.
+
+A track can appear under multiple genre records, which can influence aggregate statistics. :contentReference[oaicite:21]{index=21}
+
+---
+
+## Popularity is a proxy
+
+Popularity is used in several analyses as a catalog-level metric.
+
+It should not be treated as:
+
+> "This is how much a user likes the track."
+
+It is a dataset attribute used to construct analytical segments.
+
+---
+
+# 🛠️ Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| **n8n** | Workflow orchestration |
+| **PostgreSQL** | Data storage and SQL analytics |
+| **SQL** | Analytical calculations and segmentation |
+| **Gemini** | AI-assisted interpretation |
+| **JavaScript** | Output transformation and formatting |
+| **GitHub** | Version control and project documentation |
+| **CSV** | Spotify dataset source |
+| **JSON** | Workflow and structured data |
 
 ---
 
@@ -725,247 +690,256 @@ ai-product-analytics-agent/
 │
 ├── README.md
 │
-├── workflows/
-│   └── ai-product-analytics-agent.json
-│
 ├── docs/
 │   └── n8n-workflow-full.png
+│
+├── workflows/
+│   └── ai-product-analytics-agent.json
 │
 ├── spotify.csv
 │
 └── spotify-sample-input.json
 ```
 
+### `README.md`
+
+Project documentation.
+
+### `docs/n8n-workflow-full.png`
+
+Full screenshot of the n8n workflow architecture.
+
 ### `workflows/`
 
-Contains the exported n8n workflow.
-
-### `docs/`
-
-Contains documentation assets such as the full n8n workflow screenshot.
+Exported n8n workflow.
 
 ### `spotify.csv`
 
-The Spotify dataset used for the analysis.
+Spotify dataset used for the analysis.
 
 ### `spotify-sample-input.json`
 
-Sample structured input used for demonstrating the workflow.
+Sample structured input for the workflow.
 
 ---
 
-# 📸 Documentation
+# ▶️ How to Run
 
-## Complete Workflow
+## Step 1 — Prepare PostgreSQL
 
-The repository includes a screenshot of the complete n8n workflow.
-
-![Complete n8n Workflow](docs/n8n-workflow-full.png)
-
-The screenshot provides a visual overview of:
-
-- Workflow trigger
-- PostgreSQL nodes
-- 17 SQL analytical branches
-- Aggregation nodes
-- Gemini nodes
-- JavaScript nodes
-- Final processing stages
+Load the Spotify dataset into PostgreSQL.
 
 ---
 
-# ✅ Successful Execution
+## Step 2 — Configure n8n
 
-A historical execution of the workflow was successfully completed.
+Configure the PostgreSQL connection inside n8n.
+
+---
+
+## Step 3 — Configure Gemini
+
+Add the required Gemini credentials to the AI nodes.
+
+---
+
+## Step 4 — Import the Workflow
+
+Import the workflow JSON from:
 
 ```text
-Execution ID: 414
-Status: SUCCESS
-Mode: Manual
-Started: 2026-08-02 09:39:54
-Stopped: 2026-08-02 09:44:24
-```
-
-The execution demonstrates the complete workflow running successfully through its analytical branches.
-
-The execution output can be retained as a project artifact for reproducibility and demonstration.
-
----
-
-# 🛠️ Technology Stack
-
-| Technology | Role |
-|---|---|
-| **n8n** | Workflow automation and orchestration |
-| **PostgreSQL** | Dataset storage and analytical queries |
-| **SQL** | Core analytical calculations |
-| **Google Gemini** | AI-assisted interpretation |
-| **JavaScript** | Data transformation and report processing |
-| **GitHub** | Version control and project documentation |
-| **CSV** | Dataset storage/import format |
-| **JSON** | Workflow and structured data representation |
-
----
-
-# 🚀 How to Run
-
-## 1. Prepare the Dataset
-
-Load the Spotify CSV dataset into PostgreSQL.
-
-The workflow uses the Spotify table as the analytical source.
-
----
-
-## 2. Configure PostgreSQL
-
-Create a PostgreSQL credential in n8n and connect it to the SQL nodes.
-
----
-
-## 3. Configure Gemini
-
-Configure the Google Gemini credential required by the AI analysis nodes.
-
----
-
-## 4. Import the Workflow
-
-Import:
-
-```text
-workflows/ai-product-analytics-agent.json
+workflows/
 ```
 
 into n8n.
 
 ---
 
-## 5. Execute
+## Step 5 — Execute
 
-Start the workflow using:
+Use:
 
 ```text
-When clicking 'Execute workflow'
+Execute workflow
 ```
 
-The workflow then runs the analytical branches and generates the downstream outputs.
+The central trigger fans execution out across the analytical SQL branches.
 
 ---
 
-# ⚠️ Limitations
+## Step 6 — Review Results
 
-This project is a **product analytics prototype**, not a production recommendation system.
+The workflow produces:
 
-The following limitations apply:
+```text
+SQL Results
+     ↓
+Aggregated Results
+     ↓
+Gemini Reports
+     ↓
+JavaScript Output
+```
 
-- The analysis uses a Spotify catalog dataset rather than live user behavior.
-- Skip-risk is a SQL-defined heuristic rather than an observed skip rate.
-- Engagement scores are analytical heuristics rather than measured retention.
-- Viral-potential scores do not predict actual virality.
-- User segments are based on catalog characteristics rather than real user-level behavior.
-- Technical feasibility classifications are generated by workflow logic.
-- User-demand labels are hypotheses rather than validated user research.
-- Roadmap priorities are analytical outputs rather than final product decisions.
-- AI-generated interpretations require human review.
+The final outputs can then be used for product analysis and documentation.
 
 ---
 
-# 🧪 How This Could Be Validated
+# ✅ Successful Execution
 
-The next step would be connecting the analytical hypotheses to real product experiments.
+A complete execution was successfully recorded for this workflow.
 
 ```text
-Analytical Hypothesis
-        ↓
-Product Experiment
-        ↓
-Real Users
-        ↓
-Behavioral Data
-        ↓
-A/B Test
-        ↓
-Measure Impact
-        ↓
-Product Decision
+Execution ID: 414
+Workflow ID: fylalEIuExLBhipB
+
+Status: SUCCESS
+
+Started:
+2026-08-02T09:39:54.027Z
+
+Stopped:
+2026-08-02T09:44:24.822Z
+
+Total Nodes:
+86
 ```
 
-Potential metrics include:
+:contentReference[oaicite:22]{index=22}
 
-- Skip rate
-- Completion rate
-- Save rate
-- Repeat listening
-- Playlist additions
-- Discovery clicks
-- Session duration
-- Recommendation acceptance
-- Retention
+The execution data also shows successful execution of the SQL, aggregation, Gemini, and JavaScript stages. For example, the product-opportunity SQL branch, aggregation stage, Gemini interpretation, and JavaScript processing all report `success`. :contentReference[oaicite:23]{index=23} :contentReference[oaicite:24]{index=24} :contentReference[oaicite:25]{index=25} :contentReference[oaicite:26]{index=26}
 
-This would move the project from **catalog analytics** toward **behavioral product analytics**.
+---
+
+# 🎯 Product Management Takeaway
+
+This project demonstrates a practical workflow for turning a large dataset into a product-analysis pipeline.
+
+The key idea is:
+
+```text
+                 RAW DATA
+                    ↓
+               PostgreSQL
+                    ↓
+              17 SQL QUESTIONS
+                    ↓
+              STRUCTURED DATA
+                    ↓
+                  n8n
+                    ↓
+              GEMINI ANALYSIS
+                    ↓
+            PRODUCT INTERPRETATION
+                    ↓
+          FEATURE OPPORTUNITIES
+                    ↓
+              PRIORITIZATION
+                    ↓
+             EXPERIMENT IDEAS
+```
+
+The system helps reduce repetitive analytical work while keeping the underlying calculations in SQL.
+
+---
+
+# 💡 What This Project Demonstrates
+
+### Product Management
+
+- Translating data into product questions
+- Identifying feature opportunities
+- Prioritizing opportunities
+- Creating experimentation hypotheses
+- Separating evidence from assumptions
+
+### Data Analytics
+
+- SQL-based segmentation
+- Catalog-level analysis
+- Audio-feature analysis
+- Cross-genre analysis
+- Synthetic scoring
+- Product-oriented metrics
+
+### AI
+
+- Structured interpretation of SQL results
+- Automated report generation
+- Product insight generation
+- Natural-language summaries
+
+### Automation
+
+- Multi-branch n8n workflow
+- PostgreSQL integration
+- AI integration
+- JavaScript transformation
+- Automated end-to-end execution
 
 ---
 
 # 🔮 Future Improvements
 
-Potential future improvements include:
+The next version could extend the system with:
 
-- Add real user behavioral data
-- Add A/B testing
-- Add recommendation evaluation metrics
-- Add user-level personalization
-- Add product KPI dashboards
-- Add automated experiment analysis
-- Add recommendation feedback loops
-- Add scheduled workflow execution
-- Add automated GitHub documentation
-- Add production monitoring
-- Add error handling and retry logic
-- Add model evaluation
+- Real user listening data
+- Actual skip events
+- Session-level analytics
+- A/B testing
+- Recommendation evaluation
+- User-level personalization
+- KPI dashboards
+- Automated experiment analysis
+- Scheduled analytics runs
+- Automated GitHub documentation
+- Model evaluation
+- Production monitoring
 
----
+The most important improvement would be connecting the catalog analysis to **actual user behavioral data**.
 
-# 🎯 Key Takeaway
-
-This project demonstrates how a Product Manager can combine:
-
-**Data + SQL + Automation + AI + Product Thinking**
-
-to move from a large dataset to actionable product hypotheses.
-
-The core loop is:
+That would allow the project to move from:
 
 ```text
-Spotify Dataset
-      ↓
-PostgreSQL
-      ↓
-17 SQL Analyses
-      ↓
-n8n Aggregation
-      ↓
-Gemini Interpretation
-      ↓
-JavaScript Processing
-      ↓
-Product Insights
-      ↓
-Feature Opportunities
-      ↓
-Prioritization
-      ↓
-Experiment Ideas
+Catalog Analytics
 ```
 
-The central principle is:
+toward:
 
-> **Data provides the evidence. AI helps interpret it. Product thinking determines what to do next.**
+```text
+Behavioral Product Analytics
+```
+
+and eventually:
+
+```text
+Analytics
+   ↓
+Hypothesis
+   ↓
+Experiment
+   ↓
+User Behavior
+   ↓
+Measurement
+   ↓
+Product Decision
+```
 
 ---
 
-# 👤 Project Focus
+# 📌 Final Note
 
-**Product Analytics × AI × Automation × Music Discovery**
+The product opportunities, feasibility labels, demand hypotheses, priority scores, and roadmap placements in this project are **SQL-generated analytical outputs**.
 
-Built as a portfolio project to demonstrate the intersection of **Product Management, data-driven decision making, workflow automation, SQL analytics, and AI-assisted product analysis**.
+They are not claims about actual Spotify users or Spotify's real product roadmap.
+
+The purpose of this project is to demonstrate how a Product Manager can build an automated system that turns structured data into **evidence-backed product hypotheses that can later be validated through research and experimentation**.
+
+---
+
+## 👤 Project Focus
+
+**Product Analytics × SQL × AI × n8n Automation × Product Management**
+
+Built as a portfolio project demonstrating how automation and AI can support **data-driven product discovery and decision-making**.
