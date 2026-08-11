@@ -19,7 +19,9 @@ The goal of this project is to demonstrate how raw music data can be transformed
 ---
 
 ## 🔄 Workflow
+## 📸 n8n Workflow
 
+![Complete n8n Workflow](docs/n8n-workflow-full.png)
 The overall workflow is:
 
 **Spotify Dataset → PostgreSQL → 17 SQL Analyses → Aggregate Results → Gemini → Product Insights**
